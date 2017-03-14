@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Registration</title>
+		<script src="./js/registration.js"></script>
+</head>
+<body>
+	<div id="userForm" align="center">
+		<p></p><h1>Sample Registration Form </h1><p></p>
+		<p><label>Username: </label> <input id="username" type="text" placeholder="Username"></p>
+		<p><label>FistLast Name: </label><input id="name" type="text" placeholder="Name"></p>
+		<p><label>Email: </label><input id="email" type="email" placeholder="Email"></p>
+		<p><label>Password: </label><input id="password" type="password" placeholder="Password"></p>
+		<p><label>Age: </label><input id="age" type="text" placeholder="Age" maxlength="2" pattern="\d*"></p>
+		<p><button id="submit">Submit</button></p>   
+		<p><button id="calc">Average age</button></p>
+		
+	</div>
+	<div id="hidForm" align="center" style="display:none">
+		<h2>
+			User History:
+		</h2>
+		<ul id="ullist"></ul>
+	</div>
+	<script>
+    var uname = document.getElementById('username'); // simply the document 
+		var uflname = document.getElementById('name');
+		var umail = document.getElementById('email');
+		var upasswd = document.getElementById('password');
+		var uage = document.getElementById('age');
+		
+		var uidcount = 1; // unquie id 
+		document.getElementById('submit').onclick = function() {
+			var error = 0; // check error times
+			var information = [];
+			if(uname.value.length > 0 && uname.value.split(" ").length === 1) {
+				//if the username textbox has value and the username has no contain space
+				var exist = registration.getRec();
+				var sameName = 0; //count double typed name
+				for(var i = 0; i < exist.length; i++) {
+					if(uname.value.toLowerCase() === exist[i].Username.toLowerCase()) { //covert to low case to compare
+					
+						sameName = sameName+1;
+					}
+				}
+				if(sameName != 0) {
+					alert("The Username is exist!"); 
+					uname.focus();
+					error++;
+				}
+				else {
+					information.username = uname.value;
+				}
+			}
+			else {
+				alert("Please enter the correct username"); 
+				uname.focus();
+				error++;
+			}
+			
+			if(uflname.value.split(" ").length-1 != 1) {
+				//Ask user to input LastName and FirstName
+				alert("Please enter <LastName> <FirstName>"); 
+				uflname.focus();
+				error++;
+			}
+			else {
+				information.name = uflname.value;
+			}
+			//check the email format correct
+			var evalid = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			
+			if(umail.value.match(evalid)) {
+				information.email = umail.value;
+			}
+			else {
+				alert("Invaild email"); 
+				umail.focus();
+				error++;
+			}
+			
+			if(upasswd.value.length <= 0 || upasswd.value.length > 10 ) { //Check password can't nothing or more than 10 length
+			alert("Password cannot empty!,length 1-10");  
+			upasswd.focus();
+			error++;
+			}
+	
+			else {
+				information.password = upasswd.value;
+			}
+			
+			if((isNaN(uage.value)) || uage.value < 10 || uage.value > 99 ) {
+				alert("Age only 10 to 99!");
+				uage.focus();
+				error++;
+			}
+			else {
+				information.age = uage.value;
+			}
+			information.uid = uidcount;
+			if(error === 0) { //if no error and passed
+				console.log('Submit successfully');
+				registration.addRec(information);
+				uidcount++; //update uid
+				document.getElementById('hidForm').style.display = "block"; //show the hidden div
+				var ul = document.getElementById("ullist"); //get ul element
+				while(ul.firstChild) { //if the ul element showing records
+					ul.removeChild(ul.firstChild); //clean it
+				}
+				var records = registration.getRec(); //get records
+				for(var i = 0; i < records.length; i++) {
+					var li = document.createElement("li"); //display records
+					var record = "Username:"+records[i].Username+"    Name:"+records[i].Name+"    Email:"+records[i].Email+"    Password:"+records[i].Password+"    Age:"+records[i].Age+"    Unique ID:"+records[i].UID;
+					li.appendChild(document.createTextNode(record));
+					ul.appendChild(li);
+				}
+			}
+			else {
+				alert("Unable to submit,Please try again")
+			}
+		}
+		document.getElementById('calc').onclick = function() {
+			var average = registration.getRec();
+			var avg = 0; 
+			for(var i = 0; i < average.length; i++) {
+				avg = avg + parseInt(average[i].Age);
+			}
+			if(average.length > 0) {
+				avg = avg/average.length;
+			}
+			alert("Average Age is " + avg); 
+		}
+
+	</script>
+
+</body></html>
